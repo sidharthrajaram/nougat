@@ -5,14 +5,15 @@ This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
 """
 import argparse
+import fitz
 import logging
-import pypdfium2
 from pathlib import Path
+from PIL import Image
 from tqdm import tqdm
 import io
 from typing import Optional, List, Union
 
-logging.getLogger("pypdfium2").setLevel(logging.WARNING)
+logging.getLogger("fitz").setLevel(logging.WARNING)
 
 
 def rasterize_paper(
@@ -40,15 +41,12 @@ def rasterize_paper(
         return_pil = True
     try:
         if isinstance(pdf, (str, Path)):
-            pdf = pypdfium2.PdfDocument(pdf)
+            pdf_doc = fitz.open(pdf)
         if pages is None:
-            pages = range(len(pdf))
-        renderer = pdf.render(
-            pypdfium2.PdfBitmap.to_pil,
-            page_indices=pages,
-            scale=dpi / 72,
-        )
-        for i, image in zip(pages, renderer):
+            pages = range(len(pdf_doc))
+        for i in range(len(pdf_doc)):
+            pix = pdf_doc[i].get_pixmap(dpi=dpi)
+            image = Image.frombytes("RGB", (pix.width, pix.height), pix.samples)
             if return_pil:
                 page_bytes = io.BytesIO()
                 image.save(page_bytes, "bmp")

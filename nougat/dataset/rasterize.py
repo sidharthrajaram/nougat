@@ -23,7 +23,7 @@ logging.getLogger("fitz").setLevel(logging.WARNING)
 def rasterize_paper(
     pdf: Union[Path, bytes],
     outpath: Optional[Path] = None,
-    dpi: int = 96,
+    dpi: int = 200,
     return_pil=False,
     pages=None,
 ) -> Optional[List[io.BytesIO]]:
@@ -47,7 +47,7 @@ def rasterize_paper(
         # TODO: add logic for pdf is the file itself (app.py)
         if isinstance(pdf, (str, Path)):
             # pdf_doc = fitz.open(pdf)
-            page_images = convert_from_path(pdf, dpi=dpi)
+            page_images = convert_from_path(pdf, dpi=dpi, use_pdftocairo=True)
             print(len(page_images))
             print(page_images)
         else:

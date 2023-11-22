@@ -7,7 +7,7 @@ LICENSE file in the root directory of this source tree.
 import argparse
 import logging
 from pathlib import Path
-from pdf2image import convert_from_path
+from pdf2image import convert_from_path, convert_from_bytes
 from pdf2image.exceptions import (
     PDFInfoNotInstalledError,
     PDFPageCountError,
@@ -21,7 +21,7 @@ from typing import Optional, List, Union
 def rasterize_paper(
     pdf: Union[Path, bytes],
     outpath: Optional[Path] = None,
-    dpi: int = 200,
+    dpi: int = 96,
     return_pil=False,
     pages=None,
 ) -> Optional[List[io.BytesIO]]:
@@ -29,7 +29,7 @@ def rasterize_paper(
     Rasterize a PDF file to PNG images.
 
     Args:
-        pdf (Path): The path to the PDF file.
+        pdf (Path): The path to the PDF file or bytes of uploaded PDF file (in the case of nougat API usage).
         outpath (Optional[Path], optional): The output directory. If None, the PIL images will be returned instead. Defaults to None.
         dpi (int, optional): The output DPI. Defaults to 96.
         return_pil (bool, optional): Whether to return the PIL images instead of writing them to disk. Defaults to False.
@@ -42,15 +42,17 @@ def rasterize_paper(
     if outpath is None:
         return_pil = True
     try:
-        # TODO: add logic for pdf is the file itself (for app.py - nougat_api)
+        print(type(pdf))
         if isinstance(pdf, (str, Path)):
             page_images = convert_from_path(pdf, dpi=dpi, use_pdftocairo=True)
-            print(len(page_images))
-            print(page_images)
+        elif isinstance(pdf, bytes):
+            page_images = convert_from_bytes(pdf, dpi=dpi, use_pdftocairo=True)
         else:
             logging.info("Provided file path is not a PDF.")
+        
         if pages is None:
             pages = range(len(page_images))
+        
         for i in pages:
             if return_pil:
                 page_bytes = io.BytesIO()

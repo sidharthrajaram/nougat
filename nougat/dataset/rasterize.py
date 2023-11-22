@@ -5,6 +5,7 @@ This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
 """
 import argparse
+# import fitz
 import logging
 from pathlib import Path
 from pdf2image import convert_from_path
@@ -16,8 +17,6 @@ from pdf2image.exceptions import (
 from tqdm import tqdm
 import io
 from typing import Optional, List, Union
-
-logging.getLogger("fitz").setLevel(logging.WARNING)
 
 
 def rasterize_paper(
@@ -62,7 +61,7 @@ def rasterize_paper(
                 page_images[i].save(page_bytes, "bmp")
                 pils.append(page_bytes)
             # else:
-                page_images[i].save(f"image_{i+1}.png")
+                # page_images[i].save(f"image_{i+1}.png")
                 # page_images[i].save((outpath / ("%02d.png" % (i + 1))), "png")
     except Exception as e:
         logging.error(e)

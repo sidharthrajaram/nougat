@@ -5,7 +5,6 @@ This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
 """
 import argparse
-# import fitz
 import logging
 from pathlib import Path
 from pdf2image import convert_from_path
@@ -43,9 +42,8 @@ def rasterize_paper(
     if outpath is None:
         return_pil = True
     try:
-        # TODO: add logic for pdf is the file itself (app.py)
+        # TODO: add logic for pdf is the file itself (for app.py - nougat_api)
         if isinstance(pdf, (str, Path)):
-            # pdf_doc = fitz.open(pdf)
             page_images = convert_from_path(pdf, dpi=dpi, use_pdftocairo=True)
             print(len(page_images))
             print(page_images)
@@ -54,15 +52,12 @@ def rasterize_paper(
         if pages is None:
             pages = range(len(page_images))
         for i in pages:
-            # pix = page_images[i].get_pixmap(dpi=dpi)
-            # image = Image.frombytes("RGB", (pix.width, pix.height), pix.samples)
             if return_pil:
                 page_bytes = io.BytesIO()
                 page_images[i].save(page_bytes, "bmp")
                 pils.append(page_bytes)
-            # else:
-                # page_images[i].save(f"image_{i+1}.png")
-                # page_images[i].save((outpath / ("%02d.png" % (i + 1))), "png")
+            else:
+                page_images[i].save((outpath / ("%02d.png" % (i + 1))), "png")
     except Exception as e:
         logging.error(e)
     if return_pil:

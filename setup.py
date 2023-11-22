@@ -56,7 +56,7 @@ setup(
         "albumentations>=1.0.0",
         "pypdf>=3.1.0",
         "pypdfium2",
-        "PyMuPDF",
+        "pdf2image>=1.16.3",
         "Pillow>=10.0.1",
     ],
     extras_require={

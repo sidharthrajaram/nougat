@@ -5,10 +5,14 @@ This source code is licensed under the MIT license found in the
 LICENSE file in the root directory of this source tree.
 """
 import argparse
-import fitz
 import logging
 from pathlib import Path
-from PIL import Image
+from pdf2image import convert_from_path
+from pdf2image.exceptions import (
+    PDFInfoNotInstalledError,
+    PDFPageCountError,
+    PDFSyntaxError
+)
 from tqdm import tqdm
 import io
 from typing import Optional, List, Union
@@ -40,24 +44,23 @@ def rasterize_paper(
     if outpath is None:
         return_pil = True
     try:
-        print(pdf)
-        print(type(pdf))
+        # TODO: add logic for pdf is the file itself (app.py)
         if isinstance(pdf, (str, Path)):
-            pdf_doc = fitz.open(pdf)
+            # pdf_doc = fitz.open(pdf)
+            page_images = convert_from_path('/home/belval/example.pdf', dpi=dpi)
         else:
             logging.info("Provided file path is not a PDF.")
-            return
         if pages is None:
-            pages = range(len(pdf_doc))
-        for i in range(len(pdf_doc)):
-            pix = pdf_doc[i].get_pixmap(dpi=dpi)
-            image = Image.frombytes("RGB", (pix.width, pix.height), pix.samples)
+            pages = range(len(page_images))
+        for i in range(len(page_images)):
+            # pix = page_images[i].get_pixmap(dpi=dpi)
+            # image = Image.frombytes("RGB", (pix.width, pix.height), pix.samples)
             if return_pil:
                 page_bytes = io.BytesIO()
-                image.save(page_bytes, "bmp")
+                page_images[i].save(page_bytes, "bmp")
                 pils.append(page_bytes)
-            else:
-                image.save((outpath / ("%02d.png" % (i + 1))), "png")
+            # else:
+                page_images[i].save((outpath / ("%02d.png" % (i + 1))), "png")
     except Exception as e:
         logging.error(e)
     if return_pil:

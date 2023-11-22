@@ -42,6 +42,9 @@ def rasterize_paper(
     try:
         if isinstance(pdf, (str, Path)):
             pdf_doc = fitz.open(pdf)
+        else:
+            logging.info("Provided file path is not a PDF.")
+            return
         if pages is None:
             pages = range(len(pdf_doc))
         for i in range(len(pdf_doc)):

@@ -47,7 +47,7 @@ def rasterize_paper(
         # TODO: add logic for pdf is the file itself (app.py)
         if isinstance(pdf, (str, Path)):
             # pdf_doc = fitz.open(pdf)
-            page_images = convert_from_path('/home/belval/example.pdf', dpi=dpi)
+            page_images = convert_from_path(pdf, dpi=dpi)
         else:
             logging.info("Provided file path is not a PDF.")
         if pages is None:

@@ -21,7 +21,7 @@ from typing import Optional, List, Union
 def rasterize_paper(
     pdf: Union[Path, bytes],
     outpath: Optional[Path] = None,
-    dpi: int = 96,
+    dpi: int = 200,
     return_pil=False,
     pages=None,
 ) -> Optional[List[io.BytesIO]]:
@@ -31,7 +31,7 @@ def rasterize_paper(
     Args:
         pdf (Path): The path to the PDF file or bytes of uploaded PDF file (in the case of nougat API usage).
         outpath (Optional[Path], optional): The output directory. If None, the PIL images will be returned instead. Defaults to None.
-        dpi (int, optional): The output DPI. Defaults to 96.
+        dpi (int, optional): The output DPI. Defaults to 200.
         return_pil (bool, optional): Whether to return the PIL images instead of writing them to disk. Defaults to False.
         pages (Optional[List[int]], optional): The pages to rasterize. If None, all pages will be rasterized. Defaults to None.
 
@@ -42,7 +42,7 @@ def rasterize_paper(
     if outpath is None:
         return_pil = True
     try:
-        print(type(pdf))
+        # print(type(pdf))
         if isinstance(pdf, (str, Path)):
             page_images = convert_from_path(pdf, dpi=dpi, use_pdftocairo=True)
         elif isinstance(pdf, bytes):

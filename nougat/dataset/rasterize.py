@@ -48,11 +48,13 @@ def rasterize_paper(
         if isinstance(pdf, (str, Path)):
             # pdf_doc = fitz.open(pdf)
             page_images = convert_from_path(pdf, dpi=dpi)
+            print(len(page_images))
+            print(page_images)
         else:
             logging.info("Provided file path is not a PDF.")
         if pages is None:
             pages = range(len(page_images))
-        for i in range(len(page_images)):
+        for i in pages:
             # pix = page_images[i].get_pixmap(dpi=dpi)
             # image = Image.frombytes("RGB", (pix.width, pix.height), pix.samples)
             if return_pil:
@@ -60,7 +62,8 @@ def rasterize_paper(
                 page_images[i].save(page_bytes, "bmp")
                 pils.append(page_bytes)
             # else:
-                page_images[i].save((outpath / ("%02d.png" % (i + 1))), "png")
+                page_images[i].save(f"image_{i+1}.png")
+                # page_images[i].save((outpath / ("%02d.png" % (i + 1))), "png")
     except Exception as e:
         logging.error(e)
     if return_pil:

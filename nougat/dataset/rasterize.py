@@ -40,6 +40,8 @@ def rasterize_paper(
     if outpath is None:
         return_pil = True
     try:
+        print(pdf)
+        print(type(pdf))
         if isinstance(pdf, (str, Path)):
             pdf_doc = fitz.open(pdf)
         else:

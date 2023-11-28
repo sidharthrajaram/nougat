@@ -13,7 +13,7 @@ from pathlib import Path
 #     PDFPageCountError,
 #     PDFSyntaxError
 # )
-import pypdfium2
+from pypdfium2 import PdfDocument
 from tqdm import tqdm
 import io
 from typing import Optional, List, Union
@@ -46,11 +46,12 @@ def rasterize_paper(
         return_pil = True
     try:
         if isinstance(pdf, (str, Path)):
-            pdf = pypdfium2.PdfDocument(pdf)
+            pdf = PdfDocument(pdf)
         if pages is None:
             pages = range(len(pdf))
 
         for i in pages:
+            print(f"Rendering page {i}")
             image = pdf[i].render(scale=dpi / 72).to_pil()
             if return_pil:
                 page_bytes = io.BytesIO()

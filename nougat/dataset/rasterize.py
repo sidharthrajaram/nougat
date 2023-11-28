@@ -7,18 +7,15 @@ LICENSE file in the root directory of this source tree.
 import argparse
 import logging
 from pathlib import Path
-# from pdf2image import convert_from_path, convert_from_bytes
-# from pdf2image.exceptions import (
-#     PDFInfoNotInstalledError,
-#     PDFPageCountError,
-#     PDFSyntaxError
-# )
-from pypdfium2 import PdfDocument
+from pdf2image import convert_from_path, convert_from_bytes
+from pdf2image.exceptions import (
+    PDFInfoNotInstalledError,
+    PDFPageCountError,
+    PDFSyntaxError
+)
 from tqdm import tqdm
 import io
 from typing import Optional, List, Union
-
-logging.getLogger("pypdfium2").setLevel(logging.WARNING)
 
 
 def rasterize_paper(
@@ -45,42 +42,24 @@ def rasterize_paper(
     if outpath is None:
         return_pil = True
     try:
+        # print(type(pdf))
         if isinstance(pdf, (str, Path)):
-            pdf = PdfDocument(pdf)
+            page_images = convert_from_path(pdf, dpi=dpi, use_pdftocairo=True)
+        elif isinstance(pdf, bytes):
+            page_images = convert_from_bytes(pdf, dpi=dpi, use_pdftocairo=True)
+        else:
+            logging.info("Provided file path is not a PDF.")
+        
         if pages is None:
-            pages = range(len(pdf))
-
+            pages = range(len(page_images))
+        
         for i in pages:
-            print(f"Rendering page {i}")
-            image = pdf[i].render(scale=dpi / 72).to_pil()
             if return_pil:
                 page_bytes = io.BytesIO()
-                image.save(page_bytes, "bmp")
+                page_images[i].save(page_bytes, "bmp")
                 pils.append(page_bytes)
             else:
-                image.save((outpath / ("%02d.png" % (i + 1))), "png")
-    # try:
-    #     # print(type(pdf))
-    #     if isinstance(pdf, (str, Path)):
-    #         page_images = convert_from_path(pdf, dpi=dpi, use_pdftocairo=True)
-    #     elif isinstance(pdf, bytes):
-    #         page_images = convert_from_bytes(pdf, dpi=dpi, use_pdftocairo=True)
-    #     else:
-    #         logging.info("Provided file path is not a PDF.")
-        
-    #     if pages is None:
-    #         pages = range(len(page_images))
-        
-    #     for i in pages:
-
-    #     for i in pages:
-    #         image = pdf[i].render(scale=dpi / 72).to_pil()
-    #         if return_pil:
-    #             page_bytes = io.BytesIO()
-    #             page_images[i].save(page_bytes, "bmp")
-    #             pils.append(page_bytes)
-    #         else:
-    #             page_images[i].save((outpath / ("%02d.png" % (i + 1))), "png")
+                page_images[i].save((outpath / ("%02d.png" % (i + 1))), "png")
     except Exception as e:
         logging.error(e)
     if return_pil:
